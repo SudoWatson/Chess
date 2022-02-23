@@ -92,6 +92,7 @@ MigrationBackup/
 # Java
 bin/
 lib/
+res/
 *.class
 
 # Executables

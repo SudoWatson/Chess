@@ -1,7 +1,11 @@
 package main;
 
+import java.util.List;
+
 import board.Board;
+import pieces.Piece;
 import processing.core.PApplet;
+import processing.core.PVector;
 
 public class Main extends PApplet{
     
@@ -13,22 +17,60 @@ public class Main extends PApplet{
 
 
     private static Board gameBoard;
+    private static Piece pickedUpPiece;
 
     public void settings() {
         size(WIDTH, HEIGHT);
     }
 
     public void setup() {
-        gameBoard = new Board();
+        gameBoard = new Board(100, 0, HEIGHT, HEIGHT);
+        PVector test = new PVector(3,2);
+        PVector temp = new PVector(3,2);
+        System.out.println(test == temp);
     }
 
     public void draw() {
         background(33);
-        gameBoard.displayBoard(100,0,HEIGHT, HEIGHT);
+        gameBoard.displayBoard(pickedUpPiece != null ? pickedUpPiece.generateMoves(gameBoard) : null);
+
+        if (pickedUpPiece != null) {
+            translate(mouseX-gameBoard.squareWidth/2, mouseY-gameBoard.squareHeight/2);
+            pickedUpPiece.draw(gameBoard.squareWidth, gameBoard.squareHeight);
+        }
+
+
     }
 
     public void mousePressed() {
-        background(255,0,0);
+        PVector mousePos = gameBoard.getMousePosition();
+        int x = (int) mousePos.x;
+        int y = (int) mousePos.y;
+
+
+        if (mousePos.x != -1 && mousePos.y != -1) {
+            // Pick up a piece
+            if (pickedUpPiece == null) {
+                pickedUpPiece = gameBoard.board[x][y];
+
+                gameBoard.board[x][y] = null;
+            } else if (pickedUpPiece != null) {  // Drop a piece down
+                List<PVector> possibleMoves = pickedUpPiece.generateMoves(gameBoard);
+                // Cancel movement
+                if (pickedUpPiece.square.x == mousePos.x && pickedUpPiece.square.y == mousePos.y) {
+                    gameBoard.board[(int) mousePos.x][(int) mousePos.y] = pickedUpPiece;
+                    pickedUpPiece = null;
+                    return;
+                }
+                if (possibleMoves == null) return;  // No possible moves don't bother with the rest
+                for (PVector move : pickedUpPiece.generateMoves(gameBoard)) {
+                    if (move.x == mousePos.x && move.y == mousePos.y) {
+                        pickedUpPiece.movePiece(gameBoard, move);
+                        pickedUpPiece = null;
+                    }
+                }
+            }
+        }
     }
     
 
