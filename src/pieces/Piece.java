@@ -2,6 +2,7 @@ package pieces;
 
 import static main.Main.sketch;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import board.Board;
@@ -62,7 +63,18 @@ public abstract class Piece {
         if (this.team == Team.BLACK) iconFilePath += 'B';
         else iconFilePath += 'W';
         iconFilePath += ".png";
+
+        // Load piece image
         this.icon = sketch.loadImage("res/" + iconFilePath);
+        if (this.icon == null) {
+            // Image not found, load missing image
+            System.err.println("Chess image not found: " + "res/" + iconFilePath);
+            this.icon = sketch.loadImage("res/missing.png");
+        }
+
+        if (this.icon == null) {
+            System.err.println("Error 'missing' texture image not found!!");
+        }
     }
 
     public void movePiece(Board gameBoard, PVector square) {
@@ -79,5 +91,86 @@ public abstract class Piece {
     //     fenSymbols.put(String.valueOf(symbol), this);
     // }
 
-    public abstract List<PVector> generateMoves(Board gameBoard);  // TODO
+    public abstract List<PVector> generateMoves(Board gameBoard);
+
+
+    // TODO Doc
+    protected List <PVector> generateDiaganolMoves(Board gameBoard) {
+        return generateDiaganolMoves(gameBoard, -1);
+    }
+    // TODO Doc
+    protected List <PVector> generateDiaganolMoves(Board gameBoard, int maxDist) {
+        List<PVector> possibleMoves = new ArrayList<PVector>();
+
+        // Handle diagonal moves
+        for (int j = -1; j <= 1; j+=2) {  // Do negative and positive
+            for (int k = -1; k <= 1; k+=2) {  // Do negative and positive
+                // Max Distance is either the maximum provided distance, or the maximum size of the board
+                maxDist = (maxDist > 0 ? maxDist : ((gameBoard.cols > gameBoard.rows) ? gameBoard.cols : gameBoard.rows));
+                for (int i = 1; i <= maxDist; i++) {  // Maximum to move is the minimum dimension of the board
+                    PVector futureMove = new PVector(this.square.x + i*j, this.square.y + i*k);
+                    if (!gameBoard.verrifySquareInBounds(futureMove)) break;  // Reached edge of board, move on
+                    if (gameBoard.getPiece(futureMove) == null) {
+                        possibleMoves.add(futureMove);
+                        continue;
+                    }
+                    if (gameBoard.getPiece(futureMove).team != this.team) {
+                        possibleMoves.add(futureMove);
+                    }
+                    break;  // Blocked, that's it for this line go to next line
+                }
+            }
+        }
+        return possibleMoves;
+    }
+
+    // TODO Doc
+    protected List <PVector> generateStraightMoves(Board gameBoard) {
+        return generateStraightMoves(gameBoard, -1);
+    }
+    // TODO Doc
+    protected List <PVector> generateStraightMoves(Board gameBoard, int maxDist) {
+        List<PVector> possibleMoves = new ArrayList<PVector>();
+
+        // Handle verticle moves
+        for (int j = -1; j <= 1; j+=2) {  // Do negative and positive
+            maxDist = (maxDist > 0 ? maxDist : gameBoard.rows);  // Maximum to move vertically is the verticle height of board, or max input
+            for (int i = 1; i <= maxDist; i++) {
+                PVector futureMove = new PVector(this.square.x, this.square.y + i*j);
+                if (!gameBoard.verrifySquareInBounds(futureMove)) break;  // Reached edge of board, move on
+                if (gameBoard.getPiece(futureMove) == null) {
+                    possibleMoves.add(futureMove);
+                    continue;
+                }
+                if (gameBoard.getPiece(futureMove).team != this.team) {
+                    possibleMoves.add(futureMove);
+                }
+                break;  // Blocked, that's it for this line go to next line
+            }
+        }
+
+        // Handle horizontal moves moves
+        for (int j = -1; j <= 1; j+=2) {  // Do negative and positive
+            maxDist = (maxDist > 0 ? maxDist : gameBoard.cols);  // Maximum to move horizontall is the horizontal height of board, or max input
+            for (int i = 1; i <= maxDist; i++) {
+                PVector futureMove = new PVector(this.square.x + i*j, this.square.y);
+                if (!gameBoard.verrifySquareInBounds(futureMove)) break;  // Reached edge of board, move on
+                if (gameBoard.getPiece(futureMove) == null) {
+                    possibleMoves.add(futureMove);
+                    continue;
+                }
+                if (gameBoard.getPiece(futureMove).team != this.team) {
+                    possibleMoves.add(futureMove);
+                }
+                break;  // Blocked, that's it for this line go to next line
+            }
+        }
+
+        return possibleMoves;
+    }
+
+    protected void capture(Board gameBoard, PVector square) {
+        gameBoard.removePiece(square);
+    }
+
 }

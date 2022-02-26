@@ -1,10 +1,3 @@
-### VisualStudio ###
-*.rsuser
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-*.userprefs
 mono_crash.*
 # Build results
 [Dd]ebug/
@@ -16,65 +9,30 @@ x86/
 [Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
-bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
 .vs/
-Generated\ Files/
-[Tt]est[Rr]esult*/
-[Bb]uild[Ll]og.*
 *.VisualState.xml
-TestResult.xml
-nunit-*.xml
-[Dd]ebugPS/
-[Rr]eleasePS/
 dlldata.c
-# .NET Core
 project.lock.json
 project.fragment.lock.json
-artifacts/
-ScaffoldingReadMe.txt
-StyleCopReport.xml
-# Files built by Visual Studio
-*_i.c
-*_p.c
-*_h.h
-*.ilk
 *.meta
 *.obj
-*.iobj
-*.pch
-*.pdb
-*.ipdb
-*.pgc
-*.pgd
-*.rsp
-*.sbr
-*.tlb
-*.tli
-*.tlh
 *.tmp
 *.tmp_proj
-*_wpftmp.csproj
 *.log
 .builds
 *.cachefile
 *.[Cc]ache
 !?*.[Cc]ache/
-node_modules/
-__pycache__/
-*.pyc
 *.binlog
-*.nvuser
 .localhistory/
 .vshistory/
 MigrationBackup/
-.ionide/
 .vscode/*
 .history/
-*.cab
 *.msi
 *.msix
 *.msm
@@ -82,16 +40,12 @@ MigrationBackup/
 
 # Package Files #
 *.jar
-*.war
-*.nar
-*.ear
 *.zip
 *.tar.gz
 *.rar
 
 # Java
 bin/
-lib/
 res/
 *.class
 
@@ -104,6 +58,7 @@ __pycache__/
 *.pyc
 
 # Web Flow
+node_modules/
 .sass-cache/
 *.ts
 *.sass

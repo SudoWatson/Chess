@@ -1,0 +1,16 @@
+##  [0.2] - 2/26/22
+### Added
+- Error handling to load a 'missing' texture in case chess piece image is missing
+- Simple move generation to Pawn
+- Isolated board square verifaction and piece getting into board class
+- General diagonal move generation
+- General straight move generation
+- Move generation to Bishop
+- Move generation to Rook
+- Move generation to Queen
+- Move generation to King
+- Turn swapping
+- Several general usage methods to 'Board' class
+
+### Changed
+- Isolated board square verifacation and piece getting into 'Board' class

@@ -1,5 +1,6 @@
 package pieces;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import board.Board;
@@ -13,7 +14,13 @@ public class King extends Piece {
 
     @Override
     public List<PVector> generateMoves(Board gameBoard) {
-        // TODO Auto-generated method stub
-        return null;
+        List<PVector> possibleMoves = new ArrayList<PVector>();
+
+        possibleMoves.addAll(this.generateStraightMoves(gameBoard, 1));
+        possibleMoves.addAll(this.generateDiaganolMoves(gameBoard, 1));
+
+        // TODO Castle
+
+        return possibleMoves;
     }
 }

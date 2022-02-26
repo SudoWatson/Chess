@@ -19,15 +19,20 @@ public class Main extends PApplet{
     private static Board gameBoard;
     private static Piece pickedUpPiece;
 
+    private static boolean matchTurn = true;
+    private static final boolean WHITE = true;
+    private static final boolean BLACK = false;
+
+
+    private static final boolean DISABLE_TURN_SWITCH = true;
+
+
     public void settings() {
         size(WIDTH, HEIGHT);
     }
 
     public void setup() {
         gameBoard = new Board(100, 0, HEIGHT, HEIGHT);
-        PVector test = new PVector(3,2);
-        PVector temp = new PVector(3,2);
-        System.out.println(test == temp);
     }
 
     public void draw() {
@@ -39,21 +44,19 @@ public class Main extends PApplet{
             pickedUpPiece.draw(gameBoard.squareWidth, gameBoard.squareHeight);
         }
 
-
     }
 
     public void mousePressed() {
         PVector mousePos = gameBoard.getMousePosition();
-        int x = (int) mousePos.x;
-        int y = (int) mousePos.y;
 
-
-        if (mousePos.x != -1 && mousePos.y != -1) {
+        if (gameBoard.verrifySquareInBounds(mousePos)) {
             // Pick up a piece
             if (pickedUpPiece == null) {
-                pickedUpPiece = gameBoard.board[x][y];
+                if ((matchTurn == WHITE && gameBoard.getPiece(mousePos).team == Piece.Team.WHITE) || (matchTurn == BLACK && gameBoard.getPiece(mousePos).team == Piece.Team.BLACK)) {
+                    pickedUpPiece = gameBoard.getPiece(mousePos);
+                    gameBoard.removePiece(mousePos);;
+                }               
 
-                gameBoard.board[x][y] = null;
             } else if (pickedUpPiece != null) {  // Drop a piece down
                 List<PVector> possibleMoves = pickedUpPiece.generateMoves(gameBoard);
                 // Cancel movement
@@ -63,10 +66,12 @@ public class Main extends PApplet{
                     return;
                 }
                 if (possibleMoves == null) return;  // No possible moves don't bother with the rest
+                // Move;
                 for (PVector move : pickedUpPiece.generateMoves(gameBoard)) {
                     if (move.x == mousePos.x && move.y == mousePos.y) {
                         pickedUpPiece.movePiece(gameBoard, move);
                         pickedUpPiece = null;
+                        if (!DISABLE_TURN_SWITCH) matchTurn = !matchTurn;  // Moved, switch turns
                     }
                 }
             }

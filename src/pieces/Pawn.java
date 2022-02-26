@@ -20,14 +20,34 @@ public class Pawn extends Piece {
         int i = (this.team == Team.BLACK ? 1 : -1);
         int maxDist = (this.moveCount == 0 ? 2 : 1);  // Can move twice if first move
 
+
+
+        // Handle forward movement
         for (int j = 1; j <= maxDist; j++) {
-            // TODO set up future move pvector and use that
-            if (this.square.y + j*i >= 0 && this.square.y + j*i < gameBoard.cols) {
-                possibleMoves.add(new PVector(this.square.x, this.square.y + j*i));
+            PVector futureMove = new PVector(this.square.x, this.square.y + j*i);
+            if (gameBoard.verrifySquareInBounds(futureMove)) {  // Verify it doesn't go out of bounds
+                if (gameBoard.getPiece(futureMove) == null) {  // Pawn can't capture in front
+                    possibleMoves.add(futureMove);
+                }
             }
         }
         
-        // TODO attack somewhere not necessarily right here
+        // Handle diagonal attacks
+        for (int j = -1; j <= 1; j+=2) {  // Diaganol is -1 and +1 x offset
+            PVector futureMove = new PVector(this.square.x + j, this.square.y + i);
+            if (!gameBoard.verrifySquareInBounds(futureMove)) continue;  // Place is out of bounds
+            if (gameBoard.getPiece(futureMove) != null && gameBoard.getPiece(futureMove).team != this.team) {
+                possibleMoves.add(futureMove);
+            }
+        }
+
+        // TODO Handle en paccant
+
+        // TODO Handle attack en paccant
+
+        // TODO Handle advancement
+
+
 
         return possibleMoves;
     }

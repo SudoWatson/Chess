@@ -20,7 +20,7 @@ public class Board {
     PVector position;
 
     public int squareWidth, squareHeight;
-    public int rows, cols;
+    public int rows, cols;  // TODO Getters
 
     public Board(int x, int y, int w, int h) {
         this(x, y, w, h, 8, 8);
@@ -37,6 +37,7 @@ public class Board {
 
 
         this.loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        //this.loadFEN("///4Q");
     }
 
     public void displayBoard(List<PVector> tintMoves) {
@@ -161,7 +162,7 @@ public class Board {
         // TODO Error handling on improperly sized FEN notation
     }
     
-
+    // TODO Doc
     public PVector getMousePosition() {
 
         int xPos = sketch.mouseX;
@@ -183,6 +184,20 @@ public class Board {
         if (sketch.mouseY > maxY + this.position.y) yPos = -1;
 
         return new PVector(xPos, yPos);
+    }
+
+    // TODO Doc
+    public boolean verrifySquareInBounds(PVector square) {
+        return (square.y >= 0 && square.y < this.cols) && (square.x >= 0 && square.x < this.rows);
+    }
+
+    //TODO Doc
+    public Piece getPiece(PVector square) {
+        return this.board[(int) square.x][(int) square.y];
+    }
+
+    public void removePiece(PVector square) {
+        this.board[(int) square.x][(int) square.y] = null;
     }
 
 }

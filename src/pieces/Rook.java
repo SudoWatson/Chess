@@ -13,7 +13,6 @@ public class Rook extends Piece {
 
     @Override
     public List<PVector> generateMoves(Board gameBoard) {
-        // TODO Auto-generated method stub
-        return null;
+        return this.generateStraightMoves(gameBoard);
     }
 }
