@@ -33,6 +33,7 @@ public class Main extends PApplet{
 
     public void setup() {
         gameBoard = new Board(100, 0, HEIGHT, HEIGHT);
+
     }
 
     public void draw() {

@@ -2,6 +2,7 @@ package board;
 
 import static main.Main.sketch;
 
+import java.util.Arrays;
 import java.util.List;
 
 import pieces.Pawn;
@@ -187,8 +188,45 @@ public class Board {
     }
 
     // TODO Doc
+    public String generateFEN() {
+        String fenString = "";
+
+
+        int gap = 0;
+        for (int y = 0; y < this.rows; y++) {
+            for (int x = 0; x < this.cols; x++) {
+                PVector checkSquare = new PVector(x, y);
+                
+                if (this.getPiece(checkSquare) == null) {
+                    gap++;
+                    continue;
+                }
+                if (gap != 0) fenString += gap;
+                gap = 0;
+
+                Piece pieceToAdd = this.getPiece(checkSquare);
+
+                // TODO Make more flexible
+                if (pieceToAdd instanceof Bishop) fenString += (pieceToAdd.team == Piece.Team.WHITE ? 'B' : 'b');
+                else if (pieceToAdd instanceof Rook) fenString += (pieceToAdd.team == Piece.Team.WHITE ? 'R' : 'r');
+                else if (pieceToAdd instanceof Knight) fenString += (pieceToAdd.team == Piece.Team.WHITE ? 'N' : 'n');
+                else if (pieceToAdd instanceof Queen) fenString += (pieceToAdd.team == Piece.Team.WHITE ? 'Q' : 'q');
+                else if (pieceToAdd instanceof King) fenString += (pieceToAdd.team == Piece.Team.WHITE ? 'K' : 'k');
+                else if (pieceToAdd instanceof Pawn) fenString += (pieceToAdd.team == Piece.Team.WHITE ? 'P' : 'p');
+
+            }
+            if (gap != 0) fenString += gap;
+            gap = 0;
+            fenString += '/';
+        }
+
+
+        return fenString;
+    }
+
+    // TODO Doc
     public boolean verrifySquareInBounds(PVector square) {
-        return (square.y >= 0 && square.y < this.cols) && (square.x >= 0 && square.x < this.rows);
+        return (square.y >= 0 && square.y < this.rows) && (square.x >= 0 && square.x < this.cols);
     }
 
     //TODO Doc

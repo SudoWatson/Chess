@@ -79,8 +79,9 @@ public abstract class Piece {
 
     public void movePiece(Board gameBoard, PVector square) {
         this.moveCount++;
+        gameBoard.removePiece(square);  // Remove self
         this.square = square;
-        gameBoard.board[(int) square.x][(int) square.y] = this;
+        gameBoard.board[(int) square.x][(int) square.y] = this;  // Add self in correct spot
     }
 
     /**
