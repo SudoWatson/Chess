@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import board.Board;
+import move.Castle;
+import move.Move;
 import processing.core.PVector;
 
 public class King extends Piece {
@@ -13,55 +15,47 @@ public class King extends Piece {
     }
 
     @Override
-    public List<PVector> generateMoves(Board gameBoard) {
-        List<PVector> possibleMoves = new ArrayList<PVector>();
+    public List<Move> generateMoves(Board gameBoard) {
+        List<Move> possibleMoves = new ArrayList<Move>();
 
         possibleMoves.addAll(this.generateStraightMoves(gameBoard, 1));
         possibleMoves.addAll(this.generateDiaganolMoves(gameBoard, 1));
-        //possibleMoves.addAll(this.generateCastleMoves(gameBoard));
+        possibleMoves.addAll(this.generateCastleMoves(gameBoard));
 
 
         return possibleMoves;
     }
     
 
-    private List<PVector> generateCastleMoves(Board gameBoard) {
-        List<PVector> possibleMoves = new ArrayList<PVector>();
-        // TODO Make this work somehow. Two pieces have to move at once
+    private List<Move> generateCastleMoves(Board gameBoard) {
+        List<Move> possibleMoves = new ArrayList<Move>();
+        if (this.moveCount != 0) return possibleMoves;  // Can't castle if already moved
 
 
         /*
-        Castling RULES-----
-        King moves 2 spaces to the left or right. The respective rook jumps over the king to the other side
-        king.x = king.oldX+-2
-        rook.x = king.oldX+-1
 
-        - King cannot have moved
-        - Rook cannot have moved
-        - TODO No pieces can be between
         - TODO King CANNOT be in check
         - TODO King CANNOT pass THROUGH check
-
 
         */
 
 
-        if (this.moveCount == 0) {
-            for (int x = 0; x < gameBoard.cols; x++) {
-                PVector futureMove = new PVector(x, this.square.y);
-                if (!gameBoard.verrifySquareInBounds(futureMove)) continue;  // Out of bounds
-                Piece potentialRook = gameBoard.getPiece(futureMove);
-                if (!(potentialRook instanceof Rook) || potentialRook.team != this.team) continue;  // Not a rook on our team
+        for (int dir = -1; dir <= 1; dir += 2) {
+            for (int offset = 1; offset < gameBoard.cols; offset++) {
+                PVector squareToCheck = new PVector(this.position.x + (offset * dir), this.position.y);
+                if (!gameBoard.verrifySquareInBounds(squareToCheck)) break;  // Out of bounds, stop checking
+                Piece potentialRook = gameBoard.getPiece(squareToCheck);
+                if (potentialRook == null) continue;  // Empty square, keep going
+                // TODO Make sure not check
+                if (!(potentialRook instanceof Rook) || potentialRook.team != this.team) break;  // Piece, but not a rook on our team
+                if (potentialRook.moveCount != 0) break;  // Rook has already moved before, can't castle with it
 
+                PVector rookNewMove = new PVector(this.position.x + dir, this.position.y);
+                PVector kingNewMove = new PVector(this.position.x + (2 * dir), this.position.y);
+                possibleMoves.add(new Castle(this, kingNewMove, potentialRook, rookNewMove));
 
-                if (potentialRook.moveCount == 0) {
-                    int invert = (int) ((potentialRook.square.x - this.square.x) / Math.abs(potentialRook.square.x - this.square.x));
-                    PVector rookNewMove = new PVector(this.square.x + invert, this.square.y);
-                    potentialRook.movePiece(gameBoard, new PVector());
-                }
             }
         }
-
         return possibleMoves;
     }
 }

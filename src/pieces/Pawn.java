@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import board.Board;
+import move.Move;
 import processing.core.PVector;
 
 public class Pawn extends Piece {
@@ -13,8 +14,8 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public List<PVector> generateMoves(Board gameBoard) {
-        List<PVector> possibleMoves = new ArrayList<PVector>();
+    public List<Move> generateMoves(Board gameBoard) {
+        List<Move> possibleMoves = new ArrayList<Move>();
 
         /**Inverts direction if black pawn */
         int i = (this.team == Team.BLACK ? 1 : -1);
@@ -24,20 +25,20 @@ public class Pawn extends Piece {
 
         // Handle forward movement
         for (int j = 1; j <= maxDist; j++) {
-            PVector futureMove = new PVector(this.square.x, this.square.y + j*i);
+            PVector futureMove = new PVector(this.position.x, this.position.y + j*i);
             if (gameBoard.verrifySquareInBounds(futureMove)) {  // Verify it doesn't go out of bounds
                 if (gameBoard.getPiece(futureMove) == null) {  // Pawn can't capture in front
-                    possibleMoves.add(futureMove);
+                possibleMoves.add(new Move(this, futureMove));
                 }
             }
         }
         
         // Handle diagonal attacks
         for (int j = -1; j <= 1; j+=2) {  // Diaganol is -1 and +1 x offset
-            PVector futureMove = new PVector(this.square.x + j, this.square.y + i);
+            PVector futureMove = new PVector(this.position.x + j, this.position.y + i);
             if (!gameBoard.verrifySquareInBounds(futureMove)) continue;  // Place is out of bounds
             if (gameBoard.getPiece(futureMove) != null && gameBoard.getPiece(futureMove).team != this.team) {
-                possibleMoves.add(futureMove);
+                possibleMoves.add(new Move(this, futureMove));
             }
         }
 

@@ -2,9 +2,9 @@ package board;
 
 import static main.Main.sketch;
 
-import java.util.Arrays;
 import java.util.List;
 
+import move.Move;
 import pieces.Pawn;
 import pieces.Piece;
 import pieces.Rook;
@@ -37,11 +37,12 @@ public class Board {
         this.squareHeight = h/this.board[0].length;
 
 
-        this.loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        //this.loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");  // Default
+        this.loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/R3KBNR");
         //this.loadFEN("///4Q");
     }
 
-    public void displayBoard(List<PVector> tintMoves) {
+    public void displayBoard(List<Move> tintMoves) {
         sketch.pushMatrix();
         sketch.translate(this.position.x, this.position.y);
 
@@ -64,8 +65,9 @@ public class Board {
 
                 // Tint possible moves  // TODO make not so bad and loopy
                 if (tintMoves != null) {
-                    for (PVector move : tintMoves) {
-                        if (move.x == row && move.y == col) {
+                    for (Move move : tintMoves) {
+                        PVector square = move.getPosition();
+                        if (square.x == row && square.y == col) {
                             sketch.fill(100,20,20,150);
                             sketch.rect(0, 0, squareWidth, squareHeight);
                         }
@@ -82,6 +84,24 @@ public class Board {
         }
 
         sketch.popMatrix();
+
+
+
+
+
+
+
+
+
+        /* TODO Delete Me */
+        for (Piece[] row : this.board) {
+            for (Piece potentialKing : row) {
+                if (potentialKing instanceof King) {
+                    this.inCheck(potentialKing);
+                }
+            }
+        }
+        /* */
     }
 
     /**
@@ -202,7 +222,7 @@ public class Board {
                     continue;
                 }
                 if (gap != 0) fenString += gap;
-                gap = 0;
+                gap = 0;  // TODO Just comment this whole method
 
                 Piece pieceToAdd = this.getPiece(checkSquare);
 
@@ -236,6 +256,21 @@ public class Board {
 
     public void removePiece(PVector square) {
         this.board[(int) square.x][(int) square.y] = null;
+    }
+
+    public boolean inCheck(Piece king) {
+        for (Piece[] row : this.board) {
+            for (Piece piece : row) {
+                if (piece == null) continue;
+                if (piece.team == king.team) continue;
+                for (Move move : piece.generateMoves(this)) {
+                    if (this.getPiece(move.getPosition()) == king) {
+                        System.out.println("Check");
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import board.Board;
+import move.Move;
 import processing.core.PVector;
 
 public class Queen extends Piece {
@@ -13,8 +14,8 @@ public class Queen extends Piece {
     }
 
     @Override
-    public List<PVector> generateMoves(Board gameBoard) {
-        List<PVector> possibleMoves = new ArrayList<PVector>();
+    public List<Move> generateMoves(Board gameBoard) {
+        List<Move> possibleMoves = new ArrayList<Move>();
         possibleMoves.addAll(this.generateDiaganolMoves(gameBoard));
         possibleMoves.addAll(this.generateStraightMoves(gameBoard));
 

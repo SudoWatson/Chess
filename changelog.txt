@@ -1,3 +1,11 @@
+## [0.2.2] - 4/12/22
+### Added
+- Castling
+
+### Redid
+- Moves - Now classes and are more flexible, including moving multiple pieces
+
+
 ## [0.2.1] - 2/26/22
 ### Added
 - Knight moveset

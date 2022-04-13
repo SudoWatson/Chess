@@ -3,6 +3,7 @@ package pieces;
 import java.util.List;
 
 import board.Board;
+import move.Move;
 import processing.core.PVector;
 
 public class Bishop extends Piece {
@@ -13,7 +14,7 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public List<PVector> generateMoves(Board gameBoard) {
+    public List<Move> generateMoves(Board gameBoard) {
         return this.generateDiaganolMoves(gameBoard);
     }
 }

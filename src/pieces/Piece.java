@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import board.Board;
+import move.Move;
 import processing.core.PImage;
 import processing.core.PVector;
 
@@ -16,7 +17,7 @@ public abstract class Piece {
         WHITE
     }
 
-    public PVector square;
+    public PVector position;
     protected int moveCount;
 
     // Dictionary of pieces to their FEN symbol
@@ -31,7 +32,7 @@ public abstract class Piece {
         this.team = teamColor;
         this.loadIcon(iconFilePath);
         this.moveCount = 0;
-        this.square = square;
+        this.position = square;
         //this.registerSymbol(fenSymbol);  // Dynamic FEN symbol registering doesn't work, but that's a todo
     }
 
@@ -77,13 +78,16 @@ public abstract class Piece {
         }
     }
 
-    public void movePiece(Board gameBoard, PVector square) {
+    // TODO Rename 'square' to currentPosition, avoid confusion with 'square' param
+    public void movePiece(PVector square) {
         this.moveCount++;
-        gameBoard.removePiece(square);  // Remove self
-        this.square = square;
-        gameBoard.board[(int) square.x][(int) square.y] = this;  // Add self in correct spot
+        this.position = square;
+        // gameBoard.removePiece(square);  // Remove self
+        // this.square = square;
+        // gameBoard.board[(int) square.x][(int) square.y] = this;  // Add self in correct spot
     }
 
+    // TODO Symbol registering
     /**
      * Registers a symbol to be associated to the piece in FEN notation
      * @param symbol - Character symbol to represent piece. Must have an upper and lower case
@@ -92,16 +96,16 @@ public abstract class Piece {
     //     fenSymbols.put(String.valueOf(symbol), this);
     // }
 
-    public abstract List<PVector> generateMoves(Board gameBoard);
+    public abstract List<Move> generateMoves(Board gameBoard);
 
 
     // TODO Doc
-    protected List <PVector> generateDiaganolMoves(Board gameBoard) {
+    protected List <Move> generateDiaganolMoves(Board gameBoard) {
         return generateDiaganolMoves(gameBoard, -1);
     }
     // TODO Doc
-    protected List <PVector> generateDiaganolMoves(Board gameBoard, int maxDist) {
-        List<PVector> possibleMoves = new ArrayList<PVector>();
+    protected List <Move> generateDiaganolMoves(Board gameBoard, int maxDist) {
+        List<Move> possibleMoves = new ArrayList<Move>();
 
         // Handle diagonal moves
         for (int j = -1; j <= 1; j+=2) {  // Do negative and positive
@@ -109,14 +113,14 @@ public abstract class Piece {
                 // Max Distance is either the maximum provided distance, or the maximum size of the board
                 maxDist = (maxDist > 0 ? maxDist : ((gameBoard.cols > gameBoard.rows) ? gameBoard.cols : gameBoard.rows));
                 for (int i = 1; i <= maxDist; i++) {  // Maximum to move is the minimum dimension of the board
-                    PVector futureMove = new PVector(this.square.x + i*j, this.square.y + i*k);
+                    PVector futureMove = new PVector(this.position.x + i*j, this.position.y + i*k);
                     if (!gameBoard.verrifySquareInBounds(futureMove)) break;  // Reached edge of board, move on
                     if (gameBoard.getPiece(futureMove) == null) {
-                        possibleMoves.add(futureMove);
+                        possibleMoves.add(new Move(this, futureMove));
                         continue;
                     }
                     if (gameBoard.getPiece(futureMove).team != this.team) {
-                        possibleMoves.add(futureMove);
+                        possibleMoves.add(new Move(this, futureMove));
                     }
                     break;  // Blocked, that's it for this line go to next line
                 }
@@ -126,25 +130,25 @@ public abstract class Piece {
     }
 
     // TODO Doc
-    protected List <PVector> generateStraightMoves(Board gameBoard) {
+    protected List <Move> generateStraightMoves(Board gameBoard) {
         return generateStraightMoves(gameBoard, -1);
     }
     // TODO Doc
-    protected List <PVector> generateStraightMoves(Board gameBoard, int maxDist) {
-        List<PVector> possibleMoves = new ArrayList<PVector>();
+    protected List <Move> generateStraightMoves(Board gameBoard, int maxDist) {
+        List<Move> possibleMoves = new ArrayList<Move>();
 
         // Handle verticle moves
         for (int j = -1; j <= 1; j+=2) {  // Do negative and positive
             maxDist = (maxDist > 0 ? maxDist : gameBoard.rows);  // Maximum to move vertically is the verticle height of board, or max input
             for (int i = 1; i <= maxDist; i++) {
-                PVector futureMove = new PVector(this.square.x, this.square.y + i*j);
+                PVector futureMove = new PVector(this.position.x, this.position.y + i*j);
                 if (!gameBoard.verrifySquareInBounds(futureMove)) break;  // Reached edge of board, move on
                 if (gameBoard.getPiece(futureMove) == null) {
-                    possibleMoves.add(futureMove);
+                    possibleMoves.add(new Move(this, futureMove));
                     continue;
                 }
                 if (gameBoard.getPiece(futureMove).team != this.team) {
-                    possibleMoves.add(futureMove);
+                    possibleMoves.add(new Move(this, futureMove));
                 }
                 break;  // Blocked, that's it for this line go to next line
             }
@@ -154,14 +158,14 @@ public abstract class Piece {
         for (int j = -1; j <= 1; j+=2) {  // Do negative and positive
             maxDist = (maxDist > 0 ? maxDist : gameBoard.cols);  // Maximum to move horizontall is the horizontal height of board, or max input
             for (int i = 1; i <= maxDist; i++) {
-                PVector futureMove = new PVector(this.square.x + i*j, this.square.y);
+                PVector futureMove = new PVector(this.position.x + i*j, this.position.y);
                 if (!gameBoard.verrifySquareInBounds(futureMove)) break;  // Reached edge of board, move on
                 if (gameBoard.getPiece(futureMove) == null) {
-                    possibleMoves.add(futureMove);
+                    possibleMoves.add(new Move(this, futureMove));
                     continue;
                 }
                 if (gameBoard.getPiece(futureMove).team != this.team) {
-                    possibleMoves.add(futureMove);
+                    possibleMoves.add(new Move(this, futureMove));
                 }
                 break;  // Blocked, that's it for this line go to next line
             }
@@ -170,8 +174,12 @@ public abstract class Piece {
         return possibleMoves;
     }
 
-    protected void capture(Board gameBoard, PVector square) {
-        gameBoard.removePiece(square);
+    public void capture(Board gameBoard) {
+        gameBoard.removePiece(this.position);
+    }
+
+    public PVector getPosition() {
+        return this.position;
     }
 
 }
