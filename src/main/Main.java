@@ -83,7 +83,12 @@ public class Main extends PApplet{
             }
         }
     }
+
     
+    public void keyPressed() {
+        if (keyCode == 70) {System.out.println(gameBoard.generateFEN());}
+    }
+
 
     /**
      * Begin Sketch. Use 'setup()' for anything that normally would go here

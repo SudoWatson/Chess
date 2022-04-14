@@ -15,13 +15,21 @@ public class King extends Piece {
     }
 
     @Override
-    public List<Move> generateMoves(Board gameBoard) {
+    public List<Move> generateCaptureMoves(Board gameBoard) {
         List<Move> possibleMoves = new ArrayList<Move>();
 
         possibleMoves.addAll(this.generateStraightMoves(gameBoard, 1));
         possibleMoves.addAll(this.generateDiaganolMoves(gameBoard, 1));
-        possibleMoves.addAll(this.generateCastleMoves(gameBoard));
+     
+        return possibleMoves;
+    }
 
+    @Override
+    public List<Move> generateMoves(Board gameBoard) {
+        List<Move> possibleMoves = new ArrayList<Move>();
+
+        possibleMoves.addAll(this.generateCaptureMoves(gameBoard));
+        possibleMoves.addAll(this.generateCastleMoves(gameBoard));
 
         return possibleMoves;
     }
@@ -30,14 +38,7 @@ public class King extends Piece {
     private List<Move> generateCastleMoves(Board gameBoard) {
         List<Move> possibleMoves = new ArrayList<Move>();
         if (this.moveCount != 0) return possibleMoves;  // Can't castle if already moved
-
-
-        /*
-
-        - TODO King CANNOT be in check
-        - TODO King CANNOT pass THROUGH check
-
-        */
+        if (gameBoard.inCheck(this.position, Piece.oppositeTeam(this.team)).size() != 0) return possibleMoves;  // Can't castle out of check
 
 
         for (int dir = -1; dir <= 1; dir += 2) {
@@ -45,11 +46,12 @@ public class King extends Piece {
                 PVector squareToCheck = new PVector(this.position.x + (offset * dir), this.position.y);
                 if (!gameBoard.verrifySquareInBounds(squareToCheck)) break;  // Out of bounds, stop checking
                 Piece potentialRook = gameBoard.getPiece(squareToCheck);
-                if (potentialRook == null) continue;  // Empty square, keep going
-                // TODO Make sure not check
+                if (gameBoard.inCheck(squareToCheck, Piece.oppositeTeam(this.team)).size() != 0) { break; } // Square in check, can't castle
+
+                if (potentialRook == null) continue;  // Empty square not in check, keep going
                 if (!(potentialRook instanceof Rook) || potentialRook.team != this.team) break;  // Piece, but not a rook on our team
                 if (potentialRook.moveCount != 0) break;  // Rook has already moved before, can't castle with it
-
+                
                 PVector rookNewMove = new PVector(this.position.x + dir, this.position.y);
                 PVector kingNewMove = new PVector(this.position.x + (2 * dir), this.position.y);
                 possibleMoves.add(new Castle(this, kingNewMove, potentialRook, rookNewMove));

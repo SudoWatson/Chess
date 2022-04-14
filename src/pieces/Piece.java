@@ -2,6 +2,7 @@ package pieces;
 
 import static main.Main.sketch;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +29,14 @@ public abstract class Piece {
 
     private PImage icon;
 
+    public Piece() {}
+
     public Piece(Team teamColor, String iconFilePath, char fenSymbol, PVector square) {
         this.team = teamColor;
         this.loadIcon(iconFilePath);
         this.moveCount = 0;
         this.position = square;
-        //this.registerSymbol(fenSymbol);  // Dynamic FEN symbol registering doesn't work, but that's a todo
+        // TODO this.registerSymbol(fenSymbol);  // Dynamic FEN symbol registering doesn't work, but that's a todo
     }
 
     /**
@@ -96,7 +99,20 @@ public abstract class Piece {
     //     fenSymbols.put(String.valueOf(symbol), this);
     // }
 
+
+    /**
+     * Generates all possible moves a piece is able to make
+     * @param gameBoard - The chess Board
+     * @return a list of all moves the piece is able to make
+     */
     public abstract List<Move> generateMoves(Board gameBoard);
+    
+    /**
+     * Generates all possible moves a piece is able to capture
+     * @param gameBoard - The chess Board
+     * @return a list of all moves the piece is able to capture in
+     */
+    public List<Move> generateCaptureMoves(Board gameBoard) { return this.generateMoves(gameBoard); }  // By default all moves are able to capture
 
 
     // TODO Doc
@@ -182,4 +198,27 @@ public abstract class Piece {
         return this.position;
     }
 
+    public static Team oppositeTeam(Team team) {
+        switch (team) {
+            case WHITE:
+                return Team.BLACK;
+            case BLACK:
+                return Team.WHITE;
+            default:
+                return null;
+        }
+    }
+
+    // TODO I don't really like this. Try to fix it when making system more flexible maybe.
+    public static Piece promote(Piece piece, Piece newPiece) {
+        newPiece.moveCount = piece.moveCount;
+        newPiece.position = piece.position;
+        newPiece.team = piece.team;
+        return newPiece;
+    }
+
+    // public static void test(Class<Piece> fds) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    //     Piece test = fds.getDeclaredConstructor().newInstance();
+    //     System.out.println(test.());
+    // }
 }

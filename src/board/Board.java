@@ -2,6 +2,7 @@ package board;
 
 import static main.Main.sketch;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import move.Move;
@@ -37,9 +38,8 @@ public class Board {
         this.squareHeight = h/this.board[0].length;
 
 
-        //this.loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");  // Default
-        this.loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/R3KBNR");
-        //this.loadFEN("///4Q");
+        this.loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");  // Default
+        //this.loadFEN("r3kbnr/ppp2ppp/n7/3ppQB1/2qPP1b1/N7/PPP2PPP/R3KBNR/");  // Debug
     }
 
     public void displayBoard(List<Move> tintMoves) {
@@ -84,24 +84,6 @@ public class Board {
         }
 
         sketch.popMatrix();
-
-
-
-
-
-
-
-
-
-        /* TODO Delete Me */
-        for (Piece[] row : this.board) {
-            for (Piece potentialKing : row) {
-                if (potentialKing instanceof King) {
-                    this.inCheck(potentialKing);
-                }
-            }
-        }
-        /* */
     }
 
     /**
@@ -135,10 +117,10 @@ public class Board {
 
             switch(current) {
                 case "p":
-                    newPiece = new Pawn(Piece.Team.BLACK, new PVector(row, col));
+                    newPiece = new Pawn(Piece.Team.BLACK, new PVector(row, col), this);
                     break;
                 case "P":
-                    newPiece = new Pawn(Piece.Team.WHITE, new PVector(row, col));
+                    newPiece = new Pawn(Piece.Team.WHITE, new PVector(row, col), this);
                     break;
                 case "r":
                     newPiece = new Rook(Piece.Team.BLACK, new PVector(row, col));
@@ -258,19 +240,29 @@ public class Board {
         this.board[(int) square.x][(int) square.y] = null;
     }
 
-    public boolean inCheck(Piece king) {
+    /**
+     * Checks if a position is being attacked by an opponent
+     * @param squarew - Position to check for check
+     * @param opponentTeam - The team to check if they are attacking the square
+     * @returns if the square is in check or not
+     */
+    public List<Piece> inCheck(PVector square, Piece.Team opponentTeam) {
+        List<Piece> attackingPieces = new ArrayList<Piece>();
         for (Piece[] row : this.board) {
             for (Piece piece : row) {
                 if (piece == null) continue;
-                if (piece.team == king.team) continue;
-                for (Move move : piece.generateMoves(this)) {
-                    if (this.getPiece(move.getPosition()) == king) {
-                        System.out.println("Check");
+                if (piece.team != opponentTeam) continue;
+                
+
+                for (Move move : piece.generateCaptureMoves(this)) {
+                    if (move.getPosition().equals(square)) {
+                        System.out.println("Check on " + square + " by " + piece.position);
+                        attackingPieces.add(piece);
                     }
                 }
             }
         }
-        return true;
+        return attackingPieces;
     }
 
 }

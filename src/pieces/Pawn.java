@@ -9,9 +9,33 @@ import processing.core.PVector;
 
 public class Pawn extends Piece {
 
-    public Pawn(Team teamColor, PVector square) {
+    private int promotionRow;
+
+    public Pawn(Team teamColor, PVector square, Board gameBoard) {
         super(teamColor, "pawn", 'p', square);
+        promotionRow = (this.team == Team.BLACK ? gameBoard.rows : 0); // Determine row that pawn needs to get to to promote 
     }
+
+
+    @Override
+    public List<Move> generateCaptureMoves(Board gameBoard) {
+        List<Move> possibleMoves = new ArrayList<Move>();
+     
+        int i = (this.team == Team.BLACK ? 1 : -1);
+        
+        // Handle diagonal attacks
+        for (int j = -1; j <= 1; j+=2) {  // Diaganol is -1 and +1 x offset
+            PVector futureMove = new PVector(this.position.x + j, this.position.y + i);
+            if (!gameBoard.verrifySquareInBounds(futureMove)) continue;  // Place is out of bounds
+            if (gameBoard.getPiece(futureMove) != null && gameBoard.getPiece(futureMove).team != this.team) {
+                possibleMoves.add(new Move(this, futureMove));
+            }
+        }
+
+
+        return possibleMoves;
+    }
+
 
     @Override
     public List<Move> generateMoves(Board gameBoard) {
@@ -32,15 +56,9 @@ public class Pawn extends Piece {
                 }
             }
         }
-        
+
         // Handle diagonal attacks
-        for (int j = -1; j <= 1; j+=2) {  // Diaganol is -1 and +1 x offset
-            PVector futureMove = new PVector(this.position.x + j, this.position.y + i);
-            if (!gameBoard.verrifySquareInBounds(futureMove)) continue;  // Place is out of bounds
-            if (gameBoard.getPiece(futureMove) != null && gameBoard.getPiece(futureMove).team != this.team) {
-                possibleMoves.add(new Move(this, futureMove));
-            }
-        }
+        possibleMoves.addAll(this.generateCaptureMoves(gameBoard));
 
         // TODO Handle en paccant
 
