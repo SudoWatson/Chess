@@ -21,7 +21,7 @@
 - FEN Notation generation from current board
 
 ### Fixed
-- Set varification of grid piece existance to not break on rectangular grid
+- Set verification of grid piece existance to not break on rectangular grid
 
 ### Began Adding
 - King Castling; Likely will take overhaul of how moves work

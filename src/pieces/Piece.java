@@ -2,7 +2,6 @@ package pieces;
 
 import static main.Main.sketch;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
