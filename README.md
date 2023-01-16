@@ -9,7 +9,7 @@
 
 ## Overview
 
-A basic clone of the famous boardgame Chess. Take turns with a friend playing it out to see who is the better player.
+A basic clone of the famous board game Chess. Take turns with a friend playing it out to see who is the better player.
 ![Initial start of Chess game](./screenshots/main.png) 
 ![Example of game movement](./screenshots/movement.png)
 
@@ -28,7 +28,7 @@ JAVA using the [Processing](https://processing.org/) library for graphics
 
 ## Future Features
 - Check move restrictions
-- En Pessant
+- En Passant
 - Piece promotion
 - Standard and generalized piece implementation to allow for modding
 - Move history
